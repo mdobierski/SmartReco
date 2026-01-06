@@ -8,11 +8,9 @@ import sys
 
 from dotenv import load_dotenv
 
-# Dodaj główny katalog do ścieżki
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BASE_DIR)
 
-# Import z app.py (główny plik)
 import main
 from app.entities.movie import Movie
 from app.repositories.movie_repository import SqlMovieRepository
@@ -22,10 +20,6 @@ load_dotenv()
 
 
 def import_tmdb_movies(total_pages: int = 500):
-    """
-    Importuje filmy z TMDb top-rated (domyślnie 500 stron = ~10k filmów).
-    Każdy film enrichowany o szczegóły (runtime, director, country).
-    """
     api_key = os.environ.get("TMDB_API_KEY")
     if not api_key:
         raise ValueError("TMDB_API_KEY nie ustawiony w .env")
@@ -45,12 +39,12 @@ def import_tmdb_movies(total_pages: int = 500):
         try:
             response = client.get_top_rated_movies(page)
         except Exception as e:
-            print(f"  ❌ Błąd pobierania strony {page}: {e}")
+            print(f"Błąd pobierania strony {page}: {e}")
             continue
 
         results = response.get("results", [])
         if not results:
-            print("  ⚠️ Brak wyników, kończę import.")
+            print("Brak wyników, kończę import.")
             break
 
         movies_batch = []
@@ -61,20 +55,17 @@ def import_tmdb_movies(total_pages: int = 500):
             if not tmdb_id:
                 continue
 
-            # Sprawdź czy film już istnieje w bazie
             existing = repo.get_by_tmdb_id(tmdb_id)
             if existing:
                 skipped_count += 1
                 continue
 
-            # Pobierz szczegóły filmu
             try:
                 details = client.get_movie_details(tmdb_id)
             except Exception as e:
-                print(f"  ⚠️ Błąd szczegółów dla tmdb_id={tmdb_id}: {e}")
+                print(f"Błąd szczegółów dla tmdb_id={tmdb_id}: {e}")
                 continue
 
-            # Wyciągnij dane
             title = details.get("title", "")
             original_title = details.get("original_title")
 
@@ -89,7 +80,6 @@ def import_tmdb_movies(total_pages: int = 500):
             vote_average = details.get("vote_average")
             vote_count = details.get("vote_count")
 
-            # Gatunek (bierzemy pierwszy)
             genres = details.get("genres", [])
             genre = genres[0].get("name") if genres else None
 
@@ -112,26 +102,22 @@ def import_tmdb_movies(total_pages: int = 500):
             )
             movies_batch.append(movie)
 
-        # Zapisz paczkę filmów
         if movies_batch:
             try:
                 repo.save_many(movies_batch)
                 imported_count += len(movies_batch)
-                status = f"  ✅ Zapisano {len(movies_batch)} filmów"
+                status = f"Zapisano {len(movies_batch)} filmów"
                 if skipped_count > 0:
                     status += f" (pominięto {skipped_count} duplikatów)"
                 status += f" (łącznie: {imported_count})"
                 print(status)
             except Exception as e:
-                print(f"  ❌ Błąd zapisu: {e}")
-                # Rollback po błędzie, by kontynuować import
+                print(f"Błąd zapisu: {e}")
                 from app.database import db
 
                 db.session.rollback()
         elif skipped_count > 0:
-            print(
-                f"  ⏭️ Pominięto {skipped_count} duplikatów (wszystkie filmy już w bazie)"
-            )
+            print(f"  ⏭️ Pominięto {skipped_count} duplikatów")
 
     print(f"\n{'='*60}")
     print(f"Import zakończony!")

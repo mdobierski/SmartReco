@@ -1,5 +1,6 @@
-from flask import Flask
+from flask import Flask, render_template
 
+from app.controllers.ai_recommendation_controller import AiRecommendationController
 from app.controllers.auth_controller import AuthController
 from app.controllers.home_controller import HomeController
 from app.controllers.movie_controller import MovieController
@@ -16,30 +17,30 @@ from app.services.preference_service import PreferenceService
 from app.services.rating_service import RatingService
 from app.services.recommendation_service import RecommendationService
 from app.utils.password_hasher import PasswordHasherService
-from config import DevelopmentConfig
+from config import Config
 
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(DevelopmentConfig)
+    app.config.from_object(Config)
 
     db.init_app(app)
 
-    # WARSTWA REPOZYTORIÓW (Data Access)
+    # Repositories
     user_repo = SqlUserRepository()
     movie_repo = SqlMovieRepository()
     rating_repo = SqlRatingRepository()
     prefs_repo = SqlPreferencesRepository()
 
-    # WARSTWA SERWISÓW (Business Logic)
+    # Services
     password_hasher = PasswordHasherService()
     auth_service = AuthService(user_repo, password_hasher)
     movie_service = MovieService(movie_repo)
     rating_service = RatingService(rating_repo)
     preference_service = PreferenceService(prefs_repo)
-    recommendation_service = RecommendationService(movie_repo, prefs_repo)
+    recommendation_service = RecommendationService(movie_repo, prefs_repo, rating_repo)
 
-    # WARSTWA KONTROLERÓW (HTTP Handling)
+    # Controllers
     home_controller = HomeController(user_repo, preference_service)
     auth_controller = AuthController(user_repo, auth_service)
     movie_controller = MovieController(user_repo, movie_service, rating_service)
@@ -49,11 +50,12 @@ def create_app():
     recommendation_controller = RecommendationController(
         user_repo, movie_service, preference_service, recommendation_service
     )
+    ai_recommendation_controller = AiRecommendationController(user_repo)
 
-    #  ROUTING (mapowanie URL → metody kontrolerów)
-
+    # Routes: Home
     app.add_url_rule("/", "index", home_controller.index, methods=["GET"])
 
+    # Routes: Auth
     app.add_url_rule("/login", "login", auth_controller.login_get, methods=["GET"])
     app.add_url_rule(
         "/login", "login_post", auth_controller.login_post, methods=["POST"]
@@ -66,9 +68,17 @@ def create_app():
     )
     app.add_url_rule("/logout", "logout", auth_controller.logout, methods=["GET"])
 
+    # Routes: Movies
     app.add_url_rule("/movies", "movies", movie_controller.list_movies, methods=["GET"])
+    app.add_url_rule(
+        "/movie/<int:movie_id>",
+        "movie_detail",
+        movie_controller.movie_detail,
+        methods=["GET"],
+    )
     app.add_url_rule("/rate", "rate", movie_controller.rate_movie, methods=["POST"])
 
+    # Routes: Preferences
     app.add_url_rule(
         "/preferences", "preferences", preference_controller.show_form, methods=["GET"]
     )
@@ -79,22 +89,39 @@ def create_app():
         methods=["POST"],
     )
 
+    # Routes: Recommendations - Criteria
     app.add_url_rule(
         "/criteria-recommendation",
-        "criteria_recommendation",
+        "criteria_form",
         recommendation_controller.criteria_form,
         methods=["GET"],
     )
     app.add_url_rule(
         "/criteria-recommendation",
-        "criteria_recommendation_post",
+        "criteria_recommend",
         recommendation_controller.criteria_recommend,
         methods=["POST"],
     )
     app.add_url_rule(
+        "/criteria-recommendation/results",
+        "criteria_results",
+        recommendation_controller.criteria_results,
+        methods=["GET"],
+    )
+
+    # Routes: Recommendations - Personal
+    app.add_url_rule(
         "/personal-recommendation",
-        "personal_recommendation",
+        "personal_recommend",
         recommendation_controller.personal_recommend,
+        methods=["GET"],
+    )
+
+    # Routes: AI Recommendations
+    app.add_url_rule(
+        "/recommendation-ai",
+        "ai_rec",
+        ai_recommendation_controller.coming_soon,
         methods=["GET"],
     )
 

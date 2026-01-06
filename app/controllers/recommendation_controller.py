@@ -9,8 +9,7 @@ from app.services.recommendation_service import RecommendationService
 
 class RecommendationController(BaseController):
     """
-    Kontroler odpowiedzialny za rekomendacje filmów.
-    Odpowiedzialność: rekomendacje kryterialne i personalizowane.
+    Kontroler rekomendacji: kryteria i personalne.
     """
 
     def __init__(
@@ -43,16 +42,51 @@ class RecommendationController(BaseController):
         year_from = request.form.get("year_from")
         year_to = request.form.get("year_to")
 
-        recommended = self.recommendation_service.recommend_with_filters(
-            countries=countries if countries else None,
-            genres=genres if genres else None,
-            year_from=int(year_from) if year_from else None,
-            year_to=int(year_to) if year_to else None,
-            limit=50,
+        # Po submitcie POST przekieruj do endpointu GET z parametrami,
+        # aby paginacja i linki działały spójnie.
+        return redirect(
+            url_for(
+                "criteria_results",
+                countries=countries,
+                genres=genres,
+                year_from=year_from,
+                year_to=year_to,
+                page=request.args.get("page", 1),
+            )
+        )
+
+    def criteria_results(self):
+        auth_redirect = self.require_auth()
+        if auth_redirect:
+            return auth_redirect
+
+        countries = request.args.getlist("countries")
+        genres = request.args.getlist("genres")
+        year_from = request.args.get("year_from")
+        year_to = request.args.get("year_to")
+        page = int(request.args.get("page", 1))
+
+        movies, total_pages, percents = (
+            self.recommendation_service.recommend_with_filters(
+                countries=countries if countries else None,
+                genres=genres if genres else None,
+                year_from=int(year_from) if year_from else None,
+                year_to=int(year_to) if year_to else None,
+                page=page,
+            )
         )
 
         return render_template(
-            "recommendations.html", movies=recommended, rec_type="Criteria"
+            "recommendations.html",
+            movies=movies,
+            rec_type="Criteria",
+            percents=percents,
+            page=page,
+            total_pages=total_pages,
+            countries=countries,
+            genres=genres,
+            year_from=year_from,
+            year_to=year_to,
         )
 
     def personal_recommend(self):
@@ -68,8 +102,16 @@ class RecommendationController(BaseController):
         if not prefs:
             return redirect(url_for("preferences"))
 
-        recommended = self.recommendation_service.recommend_for_user(user_id, limit=20)
+        page = int(request.args.get("page", 1))
+        movies, total_pages, percents = self.recommendation_service.recommend_for_user(
+            user_id=user_id, page=page
+        )
 
         return render_template(
-            "recommendations.html", movies=recommended, rec_type="Personal"
+            "recommendations.html",
+            movies=movies,
+            rec_type="Personal",
+            percents=percents,
+            page=page,
+            total_pages=total_pages,
         )

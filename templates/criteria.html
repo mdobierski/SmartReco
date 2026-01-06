@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Criteria Recommendation</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
     <div class="container">
         <h1>Select Criteria</h1>
@@ -11,21 +13,16 @@
         <form method="POST">
             <h3>Countries</h3>
             <div class="checkbox-group">
-                <label><input type="checkbox" name="countries" value="USA"> USA</label>
-                <label><input type="checkbox" name="countries" value="South Korea"> South Korea</label>
-                <label><input type="checkbox" name="countries" value="Japan"> Japan</label>
-                <label><input type="checkbox" name="countries" value="France"> France</label>
+                {% for country in countries %}
+                <label><input type="checkbox" name="countries" value="{{ country }}"> {{ country }}</label>
+                {% endfor %}
             </div>
 
             <h3>Genres</h3>
             <div class="checkbox-group">
-                <label><input type="checkbox" name="genres" value="Sci-Fi"> Sci-Fi</label>
-                <label><input type="checkbox" name="genres" value="Drama"> Drama</label>
-                <label><input type="checkbox" name="genres" value="Crime"> Crime</label>
-                <label><input type="checkbox" name="genres" value="Action"> Action</label>
-                <label><input type="checkbox" name="genres" value="Thriller"> Thriller</label>
-                <label><input type="checkbox" name="genres" value="Animation"> Animation</label>
-                <label><input type="checkbox" name="genres" value="Romance"> Romance</label>
+                {% for genre in genres %}
+                <label><input type="checkbox" name="genres" value="{{ genre }}"> {{ genre }}</label>
+                {% endfor %}
             </div>
 
             <h3>Years</h3>
@@ -42,4 +39,5 @@
         </div>
     </div>
 </body>
+
 </html>

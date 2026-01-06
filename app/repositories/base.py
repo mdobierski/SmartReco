@@ -20,10 +20,18 @@ class IMovieRepository(ABC):
     def save_many(self, movies: List[Movie]) -> None: ...
 
     @abstractmethod
+    def get_by_tmdb_id(self, tmdb_id: int) -> Optional[Movie]: ...
+
+    @abstractmethod
     def get_by_id(self, movie_id: int) -> Optional[Movie]: ...
 
     @abstractmethod
     def get_all(self) -> List[Movie]: ...
+
+    @abstractmethod
+    def search(
+        self, query: Optional[str], page: int, per_page: int
+    ) -> tuple[list[Movie], int]: ...
 
     @abstractmethod
     def get_distinct_countries(self) -> List[str]: ...
@@ -50,6 +58,9 @@ class IRatingRepository(ABC):
 
     @abstractmethod
     def get_user_rating(self, user_id: int, movie_id: int) -> Optional[Rating]: ...
+
+    @abstractmethod
+    def get_ratings_for_movie(self, movie_id: int) -> List[Rating]: ...
 
 
 class IPreferencesRepository(ABC):

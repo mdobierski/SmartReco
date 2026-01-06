@@ -25,6 +25,6 @@ dist/
 *.egg-info/
 
 # Database
-data/
-*.db
-*.db-journal
+# data/
+# *.db
+# *.db-journal

@@ -1,29 +1,53 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Recommendations</title>
-    <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
-    <div class="container">
-        <h1>{{ rec_type }} Recommendations</h1>
 
-        {% if movies %}
-        <div class="movies-list">
-            {% for movie in movies %}
-            <div class="movie-item">
-                <div class="movie-title">{{ movie.title }}</div>
-                <div class="movie-info">{{ movie.year }} | {{ movie.country }} | {{ movie.genre }}</div>
-            </div>
-            {% endfor %}
+<body>
+    <h2>{{ rec_type }} Recommendations</h2>
+
+    <div style="display:flex; flex-wrap:wrap; gap:12px;">
+        {% for movie in movies %}
+        <div style="width:220px; border:1px solid #ddd; padding:8px;">
+            {% if movie.poster_path %}
+            <img src="https://image.tmdb.org/t/p/w200{{ movie.poster_path }}" alt="{{ movie.title }}"
+                style="width:100%;">
+            {% endif %}
+            <h4><a href="{{ url_for('movie_detail', movie_id=movie.id) }}">{{ movie.title }}</a></h4>
+            <div>Match: {{ percents[loop.index0]|round(1) }}%</div>
+            <div>Rok: {{ movie.year or '-' }}</div>
+            <div>Gatunek: {{ movie.genre or '-' }}</div>
+            <div>Kraj: {{ movie.country or '-' }}</div>
+            <div>TMDb: {{ movie.vote_average or '-' }} ({{ movie.vote_count or 0 }})</div>
         </div>
+        {% endfor %}
+    </div>
+
+    <div style="margin-top:16px;">
+        {% if page > 1 %}
+        {% if rec_type == 'Personal' %}
+        <a href="{{ url_for('personal_recommend', page=page-1) }}">« Prev</a>
         {% else %}
-        <p>No movies found matching your preferences</p>
+        <a
+            href="{{ url_for('criteria_results', page=page-1, countries=countries, genres=genres, year_from=year_from, year_to=year_to) }}">«
+            Prev</a>
+        {% endif %}
         {% endif %}
 
-        <div class="back-link">
-            <a href="/">Back to Home</a>
-        </div>
+        <span>Strona {{ page }} / {{ total_pages }}</span>
+
+        {% if page < total_pages %} {% if rec_type=='Personal' %} <a
+            href="{{ url_for('personal_recommend', page=page+1) }}">Next »</a>
+            {% else %}
+            <a
+                href="{{ url_for('criteria_results', page=page+1, countries=countries, genres=genres, year_from=year_from, year_to=year_to) }}">Next
+                »</a>
+            {% endif %}
+            {% endif %}
     </div>
+
 </body>
+
 </html>

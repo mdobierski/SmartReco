@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{ movie.title }}</title>
+</head>
+
+<body>
+    <h2>{{ movie.title }}</h2>
+    {% if movie.poster_path %}
+    <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}" alt="{{ movie.title }}">
+    {% endif %}
+    <p>Oryginalny tytuł: {{ movie.original_title or '-' }}</p>
+    <p>Rok: {{ movie.year or '-' }}</p>
+    <p>Długość: {{ movie.runtime or '-' }} min</p>
+    <p>Gatunek: {{ movie.genre or '-' }}</p>
+    <p>Kraj: {{ movie.country or '-' }}</p>
+    <p>Reżyser: {{ movie.director or '-' }}</p>
+    <p>TMDb: {{ movie.vote_average or '-' }} ({{ movie.vote_count or 0 }})</p>
+    <p>Opis: {{ movie.overview or '-' }}</p>
+
+    <h3>Oceń ten film</h3>
+    <form method="POST" action="{{ url_for('rate') }}">
+        <input type="hidden" name="movie_id" value="{{ movie.id }}">
+        <input type="hidden" name="return_to" value="{{ request.path }}">
+        <label>Ocena (0-10):
+            <input type="number" name="rating" min="0" max="10" required>
+        </label>
+        <button type="submit">Zapisz ocenę</button>
+    </form>
+
+    <p><a href="{{ url_for('movies') }}">« Wróć do listy</a></p>
+</body>
+
+</html>

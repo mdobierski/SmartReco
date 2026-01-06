@@ -6,13 +6,11 @@ from app.repositories.base import IMovieRepository
 
 
 class SqlMovieRepository(IMovieRepository):
-
     def save_many(self, movies: List[Movie]) -> None:
         db.session.bulk_save_objects(movies)
         db.session.commit()
 
     def get_by_tmdb_id(self, tmdb_id: int) -> Optional[Movie]:
-        """Znajdź film po tmdb_id (zewnętrznym ID z TMDb API)."""
         return Movie.query.filter_by(tmdb_id=tmdb_id).first()
 
     def get_by_id(self, movie_id: int) -> Optional[Movie]:
@@ -20,6 +18,20 @@ class SqlMovieRepository(IMovieRepository):
 
     def get_all(self) -> List[Movie]:
         return Movie.query.all()
+
+    def search(
+        self, query: Optional[str], page: int, per_page: int
+    ) -> tuple[list[Movie], int]:
+        q = Movie.query  # type: ignore
+        if query:
+            like = f"%{query}%"
+            q = q.filter(
+                (Movie.title.ilike(like)) | (Movie.original_title.ilike(like))  # type: ignore
+            )
+        pagination = q.order_by(Movie.id.asc()).paginate(
+            page=page, per_page=per_page, error_out=False
+        )
+        return list(pagination.items), pagination.pages
 
     def get_distinct_countries(self) -> List[str]:
         rows = db.session.query(Movie.country).distinct().all()  # type: ignore
@@ -47,7 +59,5 @@ class SqlMovieRepository(IMovieRepository):
         if year_to is not None:
             query = query.filter(Movie.year <= year_to)  # type: ignore
 
-        # Sortuj po popularności/ocenie (tu: vote_count desc, vote_average desc)
         query = query.order_by(Movie.vote_count.desc(), Movie.vote_average.desc())  # type: ignore
-
         return query.all()

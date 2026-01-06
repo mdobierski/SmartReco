@@ -6,7 +6,6 @@ from app.repositories.base import IRatingRepository
 
 
 class SqlRatingRepository(IRatingRepository):
-
     def save(self, rating: Rating) -> None:
         existing = Rating.query.filter_by(
             user_id=rating.user_id, movie_id=rating.movie_id
@@ -22,3 +21,6 @@ class SqlRatingRepository(IRatingRepository):
 
     def get_user_rating(self, user_id: int, movie_id: int) -> Optional[Rating]:
         return Rating.query.filter_by(user_id=user_id, movie_id=movie_id).first()
+
+    def get_ratings_for_movie(self, movie_id: int) -> List[Rating]:
+        return Rating.query.filter_by(movie_id=movie_id).all()

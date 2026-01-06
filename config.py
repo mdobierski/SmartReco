@@ -9,7 +9,7 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 
 
 class Config:
-    """Bazowa konfiguracja aplikacji"""
+    """Konfiguracja aplikacji"""
 
     SECRET_KEY = os.environ.get("SECRET_KEY")
 
@@ -19,14 +19,4 @@ class Config:
 
     TMDB_API_KEY = os.environ.get("TMDB_API_KEY")
 
-
-class DevelopmentConfig(Config):
-    """Konfiguracja dla developmentu (teraz używana)"""
-
-    DEBUG = True
-
-
-class ProductionConfig(Config):
-    """Konfiguracja dla produkcji (przyszłość)"""
-
-    DEBUG = False
+    DEBUG = os.environ.get("DEBUG", "True").lower() == "true"

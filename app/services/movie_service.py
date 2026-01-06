@@ -1,11 +1,10 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from app.entities.movie import Movie
 from app.repositories.base import IMovieRepository
 
 
 class MovieService:
-
     def __init__(self, movie_repo: IMovieRepository):
         self.movie_repo = movie_repo
 
@@ -16,19 +15,11 @@ class MovieService:
         return self.movie_repo.get_by_id(movie_id)
 
     def get_filter_values(self):
-
         countries = self.movie_repo.get_distinct_countries()
         genres = self.movie_repo.get_distinct_genres()
-        return {
-            "countries": countries,
-            "genres": genres,
-        }
+        return {"countries": countries, "genres": genres}
 
-    def filter_movies(
-        self,
-        countries: List[str],
-        genres: List[str],
-        year_from: Optional[int],
-        year_to: Optional[int],
-    ) -> List[Movie]:
-        return self.movie_repo.filter_movies(countries, genres, year_from, year_to)
+    def search_paginated(
+        self, query: Optional[str], page: int, per_page: int
+    ) -> Tuple[List[Movie], int]:
+        return self.movie_repo.search(query, page, per_page)
