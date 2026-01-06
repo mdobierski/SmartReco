@@ -1,35 +1,47 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-    <title>{{ movie.title }}</title>
-</head>
+{% block title %}{{ movie.title }} - SmartReco{% endblock %}
 
-<body>
-    <h2>{{ movie.title }}</h2>
-    {% if movie.poster_path %}
-    <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}" alt="{{ movie.title }}">
-    {% endif %}
-    <p>Oryginalny tytuł: {{ movie.original_title or '-' }}</p>
-    <p>Rok: {{ movie.year or '-' }}</p>
-    <p>Długość: {{ movie.runtime or '-' }} min</p>
-    <p>Gatunek: {{ movie.genre or '-' }}</p>
-    <p>Kraj: {{ movie.country or '-' }}</p>
-    <p>Reżyser: {{ movie.director or '-' }}</p>
-    <p>TMDb: {{ movie.vote_average or '-' }} ({{ movie.vote_count or 0 }})</p>
-    <p>Opis: {{ movie.overview or '-' }}</p>
+{% block content %}
+<div class="movie-detail">
+    <div class="movie-poster">
+        {% if movie.poster_path %}
+        <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}" alt="{{ movie.title }}">
+        {% else %}
+        <div class="no-poster">
+            <span>No poster</span>
+        </div>
+        {% endif %}
+    </div>
 
-    <h3>Oceń ten film</h3>
+    <div class="movie-info">
+        <h2>{{ movie.title }}</h2>
+        <p><strong>Original Title:</strong> {{ movie.original_title or '-' }}</p>
+        <p><strong>Year:</strong> {{ movie.year or '-' }}</p>
+        <p><strong>Runtime:</strong> {{ movie.runtime or '-' }} min</p>
+        <p><strong>Genre:</strong> {{ movie.genre or '-' }}</p>
+        <p><strong>Country:</strong> {{ movie.country or '-' }}</p>
+        <p><strong>Director:</strong> {{ movie.director or '-' }}</p>
+        <p><strong>TMDb Rating:</strong> {{ movie.vote_average or '-' }} ({{ movie.vote_count or 0 }} votes)</p>
+        {% if movie.overview %}
+        <p><strong>Description:</strong></p>
+        <p>{{ movie.overview }}</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="rating-section">
+    <h3>Rate this movie</h3>
     <form method="POST" action="{{ url_for('rate') }}">
         <input type="hidden" name="movie_id" value="{{ movie.id }}">
         <input type="hidden" name="return_to" value="{{ request.path }}">
-        <label>Ocena (0-10):
-            <input type="number" name="rating" min="0" max="10" required>
-        </label>
-        <button type="submit">Zapisz ocenę</button>
+        <label>Rating (0-10):</label>
+        <input type="number" name="rating" min="0" max="10" placeholder="0-10" required>
+        <button type="submit">Save Rating</button>
     </form>
+</div>
 
-    <p><a href="{{ url_for('movies') }}">« Wróć do listy</a></p>
-</body>
-
-</html>
+<div class="back-link">
+    <a href="{{ url_for('movies') }}">« Back to list</a>
+</div>
+{% endblock %}

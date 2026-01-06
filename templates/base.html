@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{% block title %}SmartReco{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+    <div class="container">
+        <nav class="top-nav">
+            <div class="nav-buttons">
+                <a href="{{ url_for('index') }}" class="nav-button">Home</a>
+                <a href="{{ url_for('preferences') }}" class="nav-button">Change Preferences</a>
+            </div>
+        </nav>
+
+        {% block content %}{% endblock %}
+
+        <footer class="footer">
+            <div class="tmdb-attribution">
+                <img src="/static/att-logo/blue_long_2.svg" alt="TMDB Logo" class="tmdb-logo">
+                <p>SmartReco uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.
+                </p>
+
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>

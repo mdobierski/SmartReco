@@ -1,50 +1,43 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-    <title>Movies</title>
-</head>
+{% block title %}Movies - SmartReco{% endblock %}
 
-<body>
-    <h2>Movies</h2>
+{% block content %}
+<h2>Movies</h2>
 
-    <form method="get" action="{{ url_for('movies') }}">
-        <input type="text" name="search" placeholder="Search..." value="{{ search }}">
-        <button type="submit">Szukaj</button>
-    </form>
+<form method="get" action="{{ url_for('movies') }}" class="search-form">
+    <input type="text" name="search" placeholder="Search..." value="{{ search }}">
+    <button type="submit">Search</button>
+</form>
 
-    <div style="display:flex; flex-wrap:wrap; gap:12px;">
-        {% for movie in movies %}
-        <div style="width:180px; border:1px solid #ddd; padding:8px;">
-            {% if movie.poster_path %}
-            <img src="https://image.tmdb.org/t/p/w200{{ movie.poster_path }}" alt="{{ movie.title }}"
-                style="width:100%;">
-            {% endif %}
-            <h4><a href="{{ url_for('movie_detail', movie_id=movie.id) }}">{{ movie.title }}</a></h4>
-            <div>Rok: {{ movie.year or '-' }}</div>
-            <div>Gatunek: {{ movie.genre or '-' }}</div>
-            <div>Kraj: {{ movie.country or '-' }}</div>
-            <div>TMDb: {{ movie.vote_average or '-' }} ({{ movie.vote_count or 0 }})</div>
-            <form method="post" action="{{ url_for('rate') }}">
-                <input type="hidden" name="movie_id" value="{{ movie.id }}">
-                <input type="hidden" name="return_to" value="{{ url_for('movies', page=page, search=search) }}">
-                <input type="number" name="rating" min="0" max="10" value="{{ user_ratings.get(movie.id, '') }}"
-                    required>
-                <button type="submit">Oceń</button>
-            </form>
-        </div>
-        {% endfor %}
-    </div>
-
-    <div style="margin-top:16px;">
-        {% if page > 1 %}
-        <a href="{{ url_for('movies', page=page-1, search=search) }}">« Prev</a>
+<div class="movies-grid">
+    {% for movie in movies %}
+    <div class="movie-card">
+        {% if movie.poster_path %}
+        <img src="https://image.tmdb.org/t/p/w200{{ movie.poster_path }}" alt="{{ movie.title }}">
         {% endif %}
-        <span>Strona {{ page }} / {{ total_pages }}</span>
-        {% if page < total_pages %} <a href="{{ url_for('movies', page=page+1, search=search) }}">Next »</a>
-            {% endif %}
+        <h4><a href="{{ url_for('movie_detail', movie_id=movie.id) }}">{{ movie.title }}</a></h4>
+        <div>Year: {{ movie.year or '-' }}</div>
+        <div>Genre: {{ movie.genre or '-' }}</div>
+        <div>Country: {{ movie.country or '-' }}</div>
+        <div>TMDb: {{ movie.vote_average or '-' }} ({{ movie.vote_count or 0 }})</div>
+        <form method="post" action="{{ url_for('rate') }}">
+            <input type="hidden" name="movie_id" value="{{ movie.id }}">
+            <input type="hidden" name="return_to" value="{{ url_for('movies', page=page, search=search) }}">
+            <input type="number" name="rating" min="0" max="10" value="{{ user_ratings.get(movie.id, '') }}"
+                placeholder="0-10" required>
+            <button type="submit">Rate</button>
+        </form>
     </div>
+    {% endfor %}
+</div>
 
-</body>
-
-</html>
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="{{ url_for('movies', page=page-1, search=search) }}">« Prev</a>
+    {% endif %}
+    <span>Page {{ page }} / {{ total_pages }}</span>
+    {% if page < total_pages %} <a href="{{ url_for('movies', page=page+1, search=search) }}">Next »</a>
+        {% endif %}
+</div>
+{% endblock %}

@@ -1,53 +1,55 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-    <title>Recommendations</title>
-</head>
+{% block title %}{{ rec_type }} Recommendations - SmartReco{% endblock %}
 
-<body>
-    <h2>{{ rec_type }} Recommendations</h2>
+{% block content %}
+<h2>{{ rec_type }} Recommendations</h2>
 
-    <div style="display:flex; flex-wrap:wrap; gap:12px;">
-        {% for movie in movies %}
-        <div style="width:220px; border:1px solid #ddd; padding:8px;">
-            {% if movie.poster_path %}
-            <img src="https://image.tmdb.org/t/p/w200{{ movie.poster_path }}" alt="{{ movie.title }}"
-                style="width:100%;">
-            {% endif %}
-            <h4><a href="{{ url_for('movie_detail', movie_id=movie.id) }}">{{ movie.title }}</a></h4>
-            <div>Match: {{ percents[loop.index0]|round(1) }}%</div>
-            <div>Rok: {{ movie.year or '-' }}</div>
-            <div>Gatunek: {{ movie.genre or '-' }}</div>
-            <div>Kraj: {{ movie.country or '-' }}</div>
-            <div>TMDb: {{ movie.vote_average or '-' }} ({{ movie.vote_count or 0 }})</div>
-        </div>
-        {% endfor %}
+{% if movies %}
+<div class="movies-grid">
+    {% for movie in movies %}
+    <div class="movie-card">
+        {% if movie.poster_path %}
+        <img src="https://image.tmdb.org/t/p/w200{{ movie.poster_path }}" alt="{{ movie.title }}">
+        {% endif %}
+        <h4><a href="{{ url_for('movie_detail', movie_id=movie.id) }}">{{ movie.title }}</a></h4>
+        <div><strong>Match: {{ percents[loop.index0]|round(1) }}%</strong></div>
+        <div>Year: {{ movie.year or '-' }}</div>
+        <div>Genre: {{ movie.genre or '-' }}</div>
+        <div>Country: {{ movie.country or '-' }}</div>
+        <div>TMDb: {{ movie.vote_average or '-' }} ({{ movie.vote_count or 0 }})</div>
     </div>
+    {% endfor %}
+</div>
 
-    <div style="margin-top:16px;">
-        {% if page > 1 %}
-        {% if rec_type == 'Personal' %}
-        <a href="{{ url_for('personal_recommend', page=page-1) }}">« Prev</a>
+<div class="pagination">
+    {% if page > 1 %}
+    {% if rec_type == 'Personal' %}
+    <a href="{{ url_for('personal_recommend', page=page-1) }}">« Prev</a>
+    {% else %}
+    <a
+        href="{{ url_for('criteria_results', page=page-1, countries=countries, genres=genres, year_from=year_from, year_to=year_to) }}">«
+        Prev</a>
+    {% endif %}
+    {% endif %}
+
+    <span>Page {{ page }} / {{ total_pages }}</span>
+
+    {% if page < total_pages %} {% if rec_type=='Personal' %} <a
+        href="{{ url_for('personal_recommend', page=page+1) }}">Next »</a>
         {% else %}
         <a
-            href="{{ url_for('criteria_results', page=page-1, countries=countries, genres=genres, year_from=year_from, year_to=year_to) }}">«
-            Prev</a>
+            href="{{ url_for('criteria_results', page=page+1, countries=countries, genres=genres, year_from=year_from, year_to=year_to) }}">Next
+            »</a>
         {% endif %}
         {% endif %}
-
-        <span>Strona {{ page }} / {{ total_pages }}</span>
-
-        {% if page < total_pages %} {% if rec_type=='Personal' %} <a
-            href="{{ url_for('personal_recommend', page=page+1) }}">Next »</a>
-            {% else %}
-            <a
-                href="{{ url_for('criteria_results', page=page+1, countries=countries, genres=genres, year_from=year_from, year_to=year_to) }}">Next
-                »</a>
-            {% endif %}
-            {% endif %}
-    </div>
-
-</body>
-
-</html>
+</div>
+{% else %}
+<div class="error"
+    style="background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; text-align: center; padding: 30px;">
+    <h3>No recommendations found</h3>
+    <p>No movies match the selected criteria.</p>
+    <p>Try changing filters or updating your preferences.</p>
+</div>
+{% endif %}
+{% endblock %}

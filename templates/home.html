@@ -1,26 +1,15 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-    <title>Home</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
+{% block title %}SmartReco - Home{% endblock %}
 
-<body>
-    <div class="container">
-        <h1>Welcome, {{ email }}</h1>
+{% block content %}
+<h1>Welcome to SmartReco, {{ email }}!</h1>
 
-        <div class="menu">
-            <a href="/movies" class="menu-button">Movies List</a>
-            <a href="/criteria-recommendation" class="menu-button">Recommendation by Criteria</a>
-            <a href="{{ url_for('ai_rec') }}" class="menu-button">AI Recommendation</a>
-            <a href="/personal-recommendation" class="menu-button">Personal Recommendation</a>
-        </div>
-
-        <div class="logout-link">
-            <a href="/logout">Logout</a>
-        </div>
-    </div>
-</body>
-
-</html>
+<div style="display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: 0 auto;">
+    <a href="{{ url_for('movies') }}" class="menu-button">Browse Movies</a>
+    <a href="{{ url_for('criteria_form') }}" class="menu-button">Criteria Recommendations</a>
+    <a href="{{ url_for('personal_recommend') }}" class="menu-button">Personal Recommendations</a>
+    <a href="{{ url_for('ai_rec') }}" class="menu-button">AI Recommendations</a>
+    <a href="{{ url_for('logout') }}" class="menu-button" style="background: #666;">Logout</a>
+</div>
+{% endblock %}

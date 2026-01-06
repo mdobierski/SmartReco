@@ -1,43 +1,47 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-    <title>Criteria Recommendation</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
+{% block title %}Criteria Recommendation - SmartReco{% endblock %}
 
-<body>
-    <div class="container">
-        <h1>Select Criteria</h1>
+{% block content %}
+<h1>Select Criteria</h1>
 
-        <form method="POST">
+<form method="POST">
+    <div class="filters-grid">
+        <div>
             <h3>Countries</h3>
-            <div class="checkbox-group">
-                {% for country in countries %}
-                <label><input type="checkbox" name="countries" value="{{ country }}"> {{ country }}</label>
-                {% endfor %}
+            <div class="checkbox-scroll">
+                <div class="checkbox-group">
+                    {% for country in countries %}
+                    <label>
+                        <input type="checkbox" name="countries" value="{{ country }}">
+                        <span>{{ country }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
             </div>
+        </div>
 
+        <div>
             <h3>Genres</h3>
-            <div class="checkbox-group">
-                {% for genre in genres %}
-                <label><input type="checkbox" name="genres" value="{{ genre }}"> {{ genre }}</label>
-                {% endfor %}
+            <div class="checkbox-scroll">
+                <div class="checkbox-group">
+                    {% for genre in genres %}
+                    <label>
+                        <input type="checkbox" name="genres" value="{{ genre }}">
+                        <span>{{ genre }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
             </div>
-
-            <h3>Years</h3>
-            <div class="year-range">
-                <input type="number" name="year_from" placeholder="From" min="1900" max="2025">
-                <input type="number" name="year_to" placeholder="To" min="1900" max="2025">
-            </div>
-
-            <button type="submit">Find Movies</button>
-        </form>
-
-        <div class="back-link">
-            <a href="/">Back to Home</a>
         </div>
     </div>
-</body>
 
-</html>
+    <h3>Years</h3>
+    <div class="year-range">
+        <input type="number" name="year_from" placeholder="From" min="1900" max="2025">
+        <input type="number" name="year_to" placeholder="To" min="1900" max="2025">
+    </div>
+
+    <button type="submit">Find Movies</button>
+</form>
+{% endblock %}
