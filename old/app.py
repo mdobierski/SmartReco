@@ -1,7 +1,6 @@
 import json
 
 from flask import Flask, redirect, render_template, request, session, url_for
-
 from models import Preferences, Rating, User
 
 app = Flask(__name__)
