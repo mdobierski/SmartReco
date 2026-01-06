@@ -21,7 +21,7 @@ class TMDbClient:
         if params is None:
             params = {}  # wszystkie wywołania używają tego osobnego słownika
         params["api_key"] = self.api_key
-        params["language"] = "pl-PL"
+        params["language"] = "en-US"
 
         url = f"{self.BASE_URL}{endpoint}"
         # ograniczenie API do 4 żądań na sekundę
@@ -50,6 +50,16 @@ class TMDbClient:
 
     def extract_country(self, movie_details: Dict) -> Optional[str]:
         countries = movie_details.get("production_countries", [])
-        if countries:
-            return countries[0].get("name")
-        return None
+        if not countries:
+            return None
+
+        # Priorytet: USA i UK jako główni producenci
+        country_names = [c.get("name") for c in countries]
+
+        if "United States of America" in country_names:
+            return "United States of America"
+        if "United Kingdom" in country_names:
+            return "United Kingdom"
+
+        # W przeciwnym razie pierwszy z listy
+        return countries[0].get("name")
