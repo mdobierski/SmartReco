@@ -24,3 +24,26 @@ class SqlRatingRepository(IRatingRepository):
 
     def get_ratings_for_movie(self, movie_id: int) -> List[Rating]:
         return Rating.query.filter_by(movie_id=movie_id).all()
+
+    def delete_rating(self, user_id: int, movie_id: int) -> bool:
+        rating = Rating.query.filter_by(user_id=user_id, movie_id=movie_id).first()
+        if rating:
+            db.session.delete(rating)
+            db.session.commit()
+            return True
+        return False
+
+    def get_user_ratings_with_movies(self, user_id: int, search: str = "") -> list:
+        from app.entities.movie import Movie
+
+        query = (
+            db.session.query(Rating, Movie)
+            .join(Movie, Rating.movie_id == Movie.id)
+            .filter(Rating.user_id == user_id)  # type: ignore
+        )
+
+        if search:
+            query = query.filter(Movie.title.ilike(f"%{search}%"))  # type: ignore
+
+        results = query.order_by(Rating.created_at.desc()).all()  # type: ignore
+        return results

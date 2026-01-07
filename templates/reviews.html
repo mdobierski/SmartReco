@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}My Reviews - SmartReco{% endblock %}
+
+{% block content %}
+<h2>My Reviews</h2>
+<form method="get" action="{{ url_for('my_reviews') }}" class="search-form">
+    <input type="text" name="search" placeholder="Search by movie title..." value="{{ search }}">
+    <button type="submit">Search</button>
+    {% if search %}
+    <a href="{{ url_for('my_reviews') }}"
+        style="padding: 10px 20px; background: #999; color: white; text-decoration: none; border-radius: 4px; display: inline-block;">Clear</a>
+    {% endif %}
+</form>
+{% if reviews %}
+<div class="reviews-table-wrapper">
+    <table class="reviews-table">
+        <thead>
+            <tr>
+                <th>Movie</th>
+                <th>Year</th>
+                <th>Genre</th>
+                <th class="center">My Rating</th>
+                <th class="center">TMDb</th>
+                <th class="center">Rated On</th>
+                <th class="center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for review in reviews %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('movie_detail', movie_id=review.movie.id, return_to=request.url) }}"
+                        class="movie-link">
+                        {{ review.movie.title }}
+                    </a>
+                </td>
+                <td>{{ review.movie.year or '-' }}</td>
+                <td>{{ review.movie.genre or '-' }}</td>
+                <td class="center user-rating">{{ review.rating.rating }}/10</td>
+                <td class="center">{{ review.movie.vote_average or '-' }}</td>
+                <td class="center rating-date">{{ review.rating.created_at.strftime('%Y-%m-%d') }}</td>
+                <td class="center">
+                    <form method="post" action="{{ url_for('delete_rating') }}" class="delete-form"
+                        onsubmit="return confirm('Delete this rating?');">
+                        <input type="hidden" name="movie_id" value="{{ review.movie.id }}">
+                        <input type="hidden" name="return_to" value="{{ url_for('my_reviews', search=search) }}">
+                        <button type="submit" class="btn-delete-small">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="empty-state">You haven't rated any movies yet.</p>
+<a href="{{ url_for('movies') }}" class="menu-button empty-state-button">Browse Movies</a>
+{% endif %}
+
+{% endblock %}

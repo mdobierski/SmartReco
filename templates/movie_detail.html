@@ -31,17 +31,38 @@
 </div>
 
 <div class="rating-section">
+    {% if current_rating %}
+    <h3>Your Rating: <strong class="current-rating">{{ current_rating.rating }}/10</strong></h3>
+    <p class="rating-date">Rated on {{ current_rating.created_at.strftime('%Y-%m-%d') }}</p>
+    <form method="POST" action="{{ url_for('rate') }}" class="form-inline">
+        <input type="hidden" name="movie_id" value="{{ movie.id }}">
+        <input type="hidden" name="return_to"
+            value="{{ url_for('movie_detail', movie_id=movie.id, page=page, search=search) }}">
+        <label>Update rating:</label>
+        <input type="number" name="rating" min="0" max="10" value="{{ current_rating.rating }}" required>
+        <button type="submit">Update</button>
+    </form>
+    <form method="POST" action="{{ url_for('delete_rating') }}" class="form-inline"
+        onsubmit="return confirm('Delete your rating?');">
+        <input type="hidden" name="movie_id" value="{{ movie.id }}">
+        <input type="hidden" name="return_to"
+            value="{{ url_for('movie_detail', movie_id=movie.id, page=page, search=search) }}">
+        <button type="submit" class="btn-delete-small">Delete Rating</button>
+    </form>
+    {% else %}
     <h3>Rate this movie</h3>
     <form method="POST" action="{{ url_for('rate') }}">
         <input type="hidden" name="movie_id" value="{{ movie.id }}">
-        <input type="hidden" name="return_to" value="{{ request.path }}">
+        <input type="hidden" name="return_to"
+            value="{{ url_for('movie_detail', movie_id=movie.id, page=page, search=search) }}">
         <label>Rating (0-10):</label>
         <input type="number" name="rating" min="0" max="10" placeholder="0-10" required>
         <button type="submit">Save Rating</button>
     </form>
+    {% endif %}
 </div>
 
 <div class="back-link">
-    <a href="{{ url_for('movies') }}">« Back to list</a>
+    <a href="{{ return_to }}">« Back</a>
 </div>
 {% endblock %}

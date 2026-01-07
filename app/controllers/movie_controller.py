@@ -51,10 +51,26 @@ class MovieController(BaseController):
         if auth_redirect:
             return auth_redirect
 
+        user_id = self.get_current_user_id()
+        if user_id is None:
+            return redirect(url_for("login"))
+
         movie = self.movie_service.get_movie(movie_id)
         if not movie:
             return "Not found", 404
-        return render_template("movie_detail.html", movie=movie)
+
+        # Get current rating object if exists
+        current_rating = self.rating_service.get_user_rating_object(user_id, movie_id)
+
+        # Get navigation context (return URL or default to movies)
+        return_to = request.args.get("return_to", url_for("movies"))
+
+        return render_template(
+            "movie_detail.html",
+            movie=movie,
+            current_rating=current_rating,
+            return_to=return_to,
+        )
 
     def rate_movie(self):
         auth_redirect = self.require_auth()

@@ -62,6 +62,12 @@ class IRatingRepository(ABC):
     @abstractmethod
     def get_ratings_for_movie(self, movie_id: int) -> List[Rating]: ...
 
+    @abstractmethod
+    def delete_rating(self, user_id: int, movie_id: int) -> bool: ...
+
+    @abstractmethod
+    def get_user_ratings_with_movies(self, user_id: int, search: str = "") -> list: ...
+
 
 class IPreferencesRepository(ABC):
     @abstractmethod

@@ -129,6 +129,9 @@ class RecommendationService:
         cutoff = self._cutoff_for_user_likes(user_ratings)
         liked_ids = {r.movie_id for r in user_ratings if cutoff and r.rating >= cutoff}
 
+        # Get all rated movie IDs to exclude from recommendations
+        rated_movie_ids = {r.movie_id for r in user_ratings}
+
         # global avg (C) and m
         all_movies = self.movie_repo.get_all()
         global_avg = (
@@ -165,6 +168,10 @@ class RecommendationService:
 
         scored: List[Tuple[Movie, float, float]] = []
         for m in all_movies:
+            # Skip movies that user has already rated
+            if m.id in rated_movie_ids:
+                continue
+
             pm = self._preference_match_percent(
                 m, countries, genres, year_from, year_to
             )

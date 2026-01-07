@@ -9,12 +9,16 @@
 
 <body>
     <div class="container">
+        {% if session.get('user_email') %}
         <nav class="top-nav">
             <div class="nav-buttons">
                 <a href="{{ url_for('index') }}" class="nav-button">Home</a>
+                <a href="{{ url_for('my_reviews') }}" class="nav-button">My Reviews</a>
                 <a href="{{ url_for('preferences') }}" class="nav-button">Change Preferences</a>
+                <a href="{{ url_for('logout') }}" class="nav-button">Logout</a>
             </div>
         </nav>
+        {% endif %}
 
         {% block content %}{% endblock %}
 

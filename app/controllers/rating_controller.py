@@ -1,0 +1,51 @@
+from flask import redirect, render_template, request, url_for
+
+from app.controllers.base_controller import BaseController
+from app.repositories.base import IUserRepository
+from app.services.rating_service import RatingService
+
+
+class RatingController(BaseController):
+    def __init__(self, rating_service: RatingService, user_repo: IUserRepository):
+        super().__init__(user_repo)
+        self.rating_service = rating_service
+
+    def my_reviews(self):
+        """Display all user's ratings with movie details, with search."""
+        auth_check = self.require_auth()
+        if auth_check:
+            return auth_check
+
+        user_id = self.get_current_user_id()
+        if user_id is None:
+            return redirect(url_for("login"))
+
+        search = request.args.get("search", "", type=str)
+        ratings_with_movies = self.rating_service.get_ratings_with_movies(
+            user_id, search
+        )
+
+        # Transform to list of dicts for easier template access
+        reviews = []
+        for rating, movie in ratings_with_movies:
+            reviews.append({"rating": rating, "movie": movie})
+
+        return render_template("reviews.html", reviews=reviews, search=search)
+
+    def delete_review(self):
+        """Delete user's rating and redirect back."""
+        auth_check = self.require_auth()
+        if auth_check:
+            return auth_check
+
+        user_id = self.get_current_user_id()
+        if user_id is None:
+            return redirect(url_for("login"))
+
+        movie_id = request.form.get("movie_id", type=int)
+        return_to = request.form.get("return_to", url_for("my_reviews"))
+
+        if movie_id:
+            self.rating_service.delete_rating(user_id, movie_id)
+
+        return redirect(return_to)

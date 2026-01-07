@@ -5,6 +5,7 @@ from app.controllers.auth_controller import AuthController
 from app.controllers.home_controller import HomeController
 from app.controllers.movie_controller import MovieController
 from app.controllers.preference_controller import PreferenceController
+from app.controllers.rating_controller import RatingController
 from app.controllers.recommendation_controller import RecommendationController
 from app.database import db, init_db
 from app.repositories.movie_repository import SqlMovieRepository
@@ -50,6 +51,7 @@ def create_app():
     recommendation_controller = RecommendationController(
         user_repo, movie_service, preference_service, recommendation_service
     )
+    rating_controller = RatingController(rating_service, user_repo)
     ai_recommendation_controller = AiRecommendationController(user_repo)
 
     # Routes: Home
@@ -116,7 +118,16 @@ def create_app():
         recommendation_controller.personal_recommend,
         methods=["GET"],
     )
-
+    # Routes: Reviews
+    app.add_url_rule(
+        "/my-reviews", "my_reviews", rating_controller.my_reviews, methods=["GET"]
+    )
+    app.add_url_rule(
+        "/delete-rating",
+        "delete_rating",
+        rating_controller.delete_review,
+        methods=["POST"],
+    )
     # Routes: AI Recommendations
     app.add_url_rule(
         "/recommendation-ai",

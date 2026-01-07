@@ -10,14 +10,18 @@
     {% for movie in movies %}
     <div class="movie-card">
         {% if movie.poster_path %}
-        <img src="https://image.tmdb.org/t/p/w200{{ movie.poster_path }}" alt="{{ movie.title }}">
+        <a href="{{ url_for('movie_detail', movie_id=movie.id, return_to=request.url) }}">
+            <img src="https://image.tmdb.org/t/p/w200{{ movie.poster_path }}" alt="{{ movie.title }}">
+        </a>
         {% endif %}
-        <h4><a href="{{ url_for('movie_detail', movie_id=movie.id) }}">{{ movie.title }}</a></h4>
-        <div><strong>Match: {{ percents[loop.index0]|round(1) }}%</strong></div>
-        <div>Year: {{ movie.year or '-' }}</div>
-        <div>Genre: {{ movie.genre or '-' }}</div>
-        <div>Country: {{ movie.country or '-' }}</div>
-        <div>TMDb: {{ movie.vote_average or '-' }} ({{ movie.vote_count or 0 }})</div>
+        <h4><a href="{{ url_for('movie_detail', movie_id=movie.id, return_to=request.url) }}">{{ movie.title }}</a></h4>
+        <div class="movie-card-info">
+            <div><strong>Match: {{ percents[loop.index0]|round(1) }}%</strong></div>
+            <div>Year: {{ movie.year or '-' }}</div>
+            <div>Genre: {{ movie.genre or '-' }}</div>
+            <div>Country: {{ movie.country or '-' }}</div>
+            <div>TMDb: {{ movie.vote_average or '-' }} ({{ movie.vote_count or 0 }})</div>
+        </div>
     </div>
     {% endfor %}
 </div>
@@ -33,7 +37,23 @@
     {% endif %}
     {% endif %}
 
-    <span>Page {{ page }} / {{ total_pages }}</span>
+    {% if rec_type == 'Personal' %}
+    <form method="get" action="{{ url_for('personal_recommend') }}" class="pagination-jump">
+        <label>Page</label>
+        <input type="number" name="page" min="1" max="{{ total_pages }}" value="{{ page }}" required>
+        <span>/ {{ total_pages }}</span>
+    </form>
+    {% else %}
+    <form method="get" action="{{ url_for('criteria_results') }}" class="pagination-jump">
+        <label>Page</label>
+        <input type="number" name="page" min="1" max="{{ total_pages }}" value="{{ page }}" required>
+        <span>/ {{ total_pages }}</span>
+        <input type="hidden" name="countries" value="{{ countries }}">
+        <input type="hidden" name="genres" value="{{ genres }}">
+        <input type="hidden" name="year_from" value="{{ year_from }}">
+        <input type="hidden" name="year_to" value="{{ year_to }}">
+    </form>
+    {% endif %}
 
     {% if page < total_pages %} {% if rec_type=='Personal' %} <a
         href="{{ url_for('personal_recommend', page=page+1) }}">Next »</a>
@@ -45,8 +65,7 @@
         {% endif %}
 </div>
 {% else %}
-<div class="error"
-    style="background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; text-align: center; padding: 30px;">
+<div class="empty-state">
     <h3>No recommendations found</h3>
     <p>No movies match the selected criteria.</p>
     <p>Try changing filters or updating your preferences.</p>

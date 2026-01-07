@@ -21,3 +21,13 @@ class RatingService:
     def get_user_rating(self, user_id: int, movie_id: int) -> Optional[int]:
         r = self.rating_repo.get_user_rating(user_id, movie_id)
         return r.rating if r else None
+
+    def get_user_rating_object(self, user_id: int, movie_id: int) -> Optional[Rating]:
+        """Get full Rating object instead of just the value."""
+        return self.rating_repo.get_user_rating(user_id, movie_id)
+
+    def delete_rating(self, user_id: int, movie_id: int) -> bool:
+        return self.rating_repo.delete_rating(user_id, movie_id)
+
+    def get_ratings_with_movies(self, user_id: int, search: str = "") -> list:
+        return self.rating_repo.get_user_ratings_with_movies(user_id, search)

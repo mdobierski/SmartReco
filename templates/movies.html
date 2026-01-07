@@ -14,29 +14,44 @@
     {% for movie in movies %}
     <div class="movie-card">
         {% if movie.poster_path %}
-        <img src="https://image.tmdb.org/t/p/w200{{ movie.poster_path }}" alt="{{ movie.title }}">
+        <a href="{{ url_for('movie_detail', movie_id=movie.id, return_to=request.url) }}">
+            <img src="https://image.tmdb.org/t/p/w200{{ movie.poster_path }}" alt="{{ movie.title }}">
+        </a>
         {% endif %}
-        <h4><a href="{{ url_for('movie_detail', movie_id=movie.id) }}">{{ movie.title }}</a></h4>
-        <div>Year: {{ movie.year or '-' }}</div>
-        <div>Genre: {{ movie.genre or '-' }}</div>
-        <div>Country: {{ movie.country or '-' }}</div>
-        <div>TMDb: {{ movie.vote_average or '-' }} ({{ movie.vote_count or 0 }})</div>
-        <form method="post" action="{{ url_for('rate') }}">
-            <input type="hidden" name="movie_id" value="{{ movie.id }}">
-            <input type="hidden" name="return_to" value="{{ url_for('movies', page=page, search=search) }}">
-            <input type="number" name="rating" min="0" max="10" value="{{ user_ratings.get(movie.id, '') }}"
-                placeholder="0-10" required>
-            <button type="submit">Rate</button>
-        </form>
+        <h4><a href="{{ url_for('movie_detail', movie_id=movie.id, return_to=request.url) }}">{{ movie.title }}</a>
+        </h4>
+        <div class="movie-card-info">
+            <div>Year: {{ movie.year or '-' }}</div>
+            <div>Genre: {{ movie.genre or '-' }}</div>
+            <div>Country: {{ movie.country or '-' }}</div>
+            <div>TMDb: {{ movie.vote_average or '-' }} ({{ movie.vote_count or 0 }})</div>
+        </div>
+        <div class="movie-card-actions">
+            <form method="post" action="{{ url_for('rate') }}">
+                <input type="hidden" name="movie_id" value="{{ movie.id }}">
+                <input type="hidden" name="return_to" value="{{ url_for('movies', page=page, search=search) }}">
+                <input type="number" name="rating" min="0" max="10" value="{{ user_ratings.get(movie.id, '') }}"
+                    placeholder="0-10" required>
+                <button type="submit">{{ 'Update' if user_ratings.get(movie.id) else 'Rate' }}</button>
+                {% if user_ratings.get(movie.id) %}
+                <button type="submit" formaction="{{ url_for('delete_rating') }}" class="btn-delete-icon"
+                    onclick="return confirm('Delete rating?');" title="Delete rating">×</button>
+                {% endif %}
+            </form>
+        </div>
     </div>
     {% endfor %}
 </div>
-
 <div class="pagination">
     {% if page > 1 %}
     <a href="{{ url_for('movies', page=page-1, search=search) }}">« Prev</a>
     {% endif %}
-    <span>Page {{ page }} / {{ total_pages }}</span>
+    <form method="get" action="{{ url_for('movies') }}" class="pagination-jump">
+        <label>Page</label>
+        <input type="number" name="page" min="1" max="{{ total_pages }}" value="{{ page }}" required>
+        <span>/ {{ total_pages }}</span>
+        <input type="hidden" name="search" value="{{ search }}">
+    </form>
     {% if page < total_pages %} <a href="{{ url_for('movies', page=page+1, search=search) }}">Next »</a>
         {% endif %}
 </div>

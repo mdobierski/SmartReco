@@ -5,6 +5,9 @@ __pycache__/
 *.pyd
 .python-version
 
+#github files
+.github/
+
 # Virtual environments
 .venv/
 venv/
