@@ -1,6 +1,6 @@
 """
-Importer TMDb - pobiera top-rated filmy z The Movie Database API.
-Enrich szczegółami (runtime, director, country) i zapisuje do bazy.
+TMDb Importer - fetches top-rated movies from The Movie Database API.
+Enriches with details (runtime, director, country) and saves to database.
 """
 
 import os
@@ -22,11 +22,11 @@ load_dotenv()
 def import_tmdb_movies(total_pages: int = 500):
     api_key = os.environ.get("TMDB_API_KEY")
     if not api_key:
-        raise ValueError("TMDB_API_KEY nie ustawiony w .env")
+        raise ValueError("TMDB_API_KEY not set in .env")
 
-    print(f"Rozpoczynam import {total_pages} stron filmów z TMDb...")
+    print(f"Starting import of {total_pages} pages of movies from TMDb...")
     print("Rate limit: 4 req/s (0.25s/request)")
-    print("Szacowany czas: ~40-60 minut\n")
+    print("Estimated time: ~40-60 minutes\n")
 
     client = TMDbClient(api_key)
     repo = SqlMovieRepository()
@@ -34,17 +34,17 @@ def import_tmdb_movies(total_pages: int = 500):
     imported_count = 0
 
     for page in range(1, total_pages + 1):
-        print(f"[{page}/{total_pages}] Pobieranie strony...")
+        print(f"[{page}/{total_pages}] Fetching page...")
 
         try:
             response = client.get_top_rated_movies(page)
         except Exception as e:
-            print(f"Błąd pobierania strony {page}: {e}")
+            print(f"Error fetching page {page}: {e}")
             continue
 
         results = response.get("results", [])
         if not results:
-            print("Brak wyników, kończę import.")
+            print("No results, ending import.")
             break
 
         movies_batch = []
@@ -63,7 +63,7 @@ def import_tmdb_movies(total_pages: int = 500):
             try:
                 details = client.get_movie_details(tmdb_id)
             except Exception as e:
-                print(f"Błąd szczegółów dla tmdb_id={tmdb_id}: {e}")
+                print(f"Error fetching details for tmdb_id={tmdb_id}: {e}")
                 continue
 
             title = details.get("title", "")
@@ -106,22 +106,22 @@ def import_tmdb_movies(total_pages: int = 500):
             try:
                 repo.save_many(movies_batch)
                 imported_count += len(movies_batch)
-                status = f"Zapisano {len(movies_batch)} filmów"
+                status = f"Saved {len(movies_batch)} movies"
                 if skipped_count > 0:
-                    status += f" (pominięto {skipped_count} duplikatów)"
-                status += f" (łącznie: {imported_count})"
+                    status += f" (skipped {skipped_count} duplicates)"
+                status += f" (total: {imported_count})"
                 print(status)
             except Exception as e:
-                print(f"Błąd zapisu: {e}")
+                print(f"Save error: {e}")
                 from app.database import db
 
                 db.session.rollback()
         elif skipped_count > 0:
-            print(f"  ⏭️ Pominięto {skipped_count} duplikatów")
+            print(f"  ⏭️ Skipped {skipped_count} duplicates")
 
     print(f"\n{'='*60}")
-    print(f"Import zakończony!")
-    print(f"Zaimportowano: {imported_count} filmów")
+    print(f"Import completed!")
+    print(f"Imported: {imported_count} movies")
     print(f"{'='*60}")
 
 

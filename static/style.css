@@ -1,4 +1,4 @@
-/* Reset i globalne style */
+/* Reset and global styles */
 * {
     margin: 0;
     padding: 0;
@@ -14,7 +14,7 @@ body {
     line-height: 1.5;
 }
 
-/* Kontenery */
+/* Containers */
 .container {
     max-width: 75rem;
     margin: 0 auto;
@@ -24,7 +24,7 @@ body {
     box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.1);
 }
 
-/* Nagłówki */
+/* Headers */
 h1,
 h2,
 h3 {
@@ -78,7 +78,7 @@ button:hover {
     background: #555;
 }
 
-/* Checkboxy i radio */
+/* Checkboxes and radio buttons */
 .checkbox-group label,
 .radio-group label {
     display: flex;
@@ -142,7 +142,7 @@ button:hover {
     background: #555;
 }
 
-/* Siatka filmów - responsywne kafelki */
+/* Movie grid - responsive tiles */
 .movies-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
@@ -150,7 +150,7 @@ button:hover {
     margin: 1.25rem 0;
 }
 
-/* Karta filmu */
+/* Movie card */
 .movie-card {
     border: 0.0625rem solid #ddd;
     border-radius: 0.5rem;
@@ -248,9 +248,7 @@ button:hover {
     background: #b71c1c;
 }
 
-/* Rating forms - usunięte, nie potrzebne z nowym layoutem */
-
-/* Paginacja */
+/* Pagination */
 .pagination {
     display: flex;
     justify-content: center;
@@ -638,7 +636,7 @@ button:hover {
     margin-top: 1.25rem;
 }
 
-/* Responsywność */
+/* Responsive design */
 @media (max-width: 768px) {
     body {
         padding: 0.625rem;

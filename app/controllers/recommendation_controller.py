@@ -42,8 +42,8 @@ class RecommendationController(BaseController):
         year_from = request.form.get("year_from")
         year_to = request.form.get("year_to")
 
-        # Po submitcie POST przekieruj do endpointu GET z parametrami,
-        # aby paginacja i linki działały spójnie.
+        # After POST submission, redirect to GET endpoint with parameters
+        # so pagination and links work consistently
         return redirect(
             url_for(
                 "criteria_results",
@@ -66,21 +66,19 @@ class RecommendationController(BaseController):
         year_to = request.args.get("year_to")
         page = int(request.args.get("page", 1))
 
-        movies, total_pages, percents = (
-            self.recommendation_service.recommend_with_filters(
-                countries=countries if countries else None,
-                genres=genres if genres else None,
-                year_from=int(year_from) if year_from else None,
-                year_to=int(year_to) if year_to else None,
-                page=page,
-            )
+        movies, total_pages = self.recommendation_service.recommend_with_filters(
+            countries=countries if countries else None,
+            genres=genres if genres else None,
+            year_from=int(year_from) if year_from else None,
+            year_to=int(year_to) if year_to else None,
+            page=page,
         )
 
         return render_template(
             "recommendations.html",
             movies=movies,
             rec_type="Criteria",
-            percents=percents,
+            percents=[],  # Empty for criteria
             page=page,
             total_pages=total_pages,
             countries=countries,

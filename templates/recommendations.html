@@ -16,7 +16,9 @@
         {% endif %}
         <h4><a href="{{ url_for('movie_detail', movie_id=movie.id, return_to=request.url) }}">{{ movie.title }}</a></h4>
         <div class="movie-card-info">
+            {% if rec_type == 'Personal' %}
             <div><strong>Match: {{ percents[loop.index0]|round(1) }}%</strong></div>
+            {% endif %}
             <div>Year: {{ movie.year or '-' }}</div>
             <div>Genre: {{ movie.genre or '-' }}</div>
             <div>Country: {{ movie.country or '-' }}</div>

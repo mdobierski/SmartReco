@@ -1,4 +1,3 @@
-import math
 from collections import Counter
 from typing import Dict, List, Optional, Tuple
 
@@ -68,7 +67,7 @@ class RecommendationService:
         cutoff = max(6, r_max - 2)
         return cutoff
 
-    # ---------- Criteria-based with percent ----------
+    # ---------- Criteria-based filtering ----------
     def recommend_with_filters(
         self,
         countries: Optional[List[str]] = None,
@@ -76,27 +75,21 @@ class RecommendationService:
         year_from: Optional[int] = None,
         year_to: Optional[int] = None,
         page: int = 1,
-    ) -> Tuple[List[Movie], int, List[float]]:
+    ) -> Tuple[List[Movie], int]:
+        """
+        Filter movies by criteria using repository.
+        No scoring - movies either match or don't.
+        """
         movies = self.movie_repo.filter_movies(
             countries=countries or [],
             genres=genres or [],
             year_from=year_from,
             year_to=year_to,
         )
-        scored: List[Tuple[Movie, float]] = []
-        for m in movies:
-            pm = self._preference_match_percent(
-                m, countries, genres, year_from, year_to
-            )
-            if pm >= 20.0:
-                scored.append((m, pm))
-        scored.sort(key=lambda x: x[1], reverse=True)
-        per_page = pick_page_size(len(scored))
-        page_items, total_pages = paginate([s[0] for s in scored], page, per_page)
-        percents = [s[1] for s in scored][
-            (page - 1) * per_page : (page - 1) * per_page + len(page_items)
-        ]
-        return page_items, total_pages, percents
+
+        per_page = pick_page_size(len(movies))
+        page_items, total_pages = paginate(movies, page, per_page)
+        return page_items, total_pages
 
     # ---------- Personal hybrid ----------
     def recommend_for_user(

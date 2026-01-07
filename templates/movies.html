@@ -34,6 +34,7 @@
                     placeholder="0-10" required>
                 <button type="submit">{{ 'Update' if user_ratings.get(movie.id) else 'Rate' }}</button>
                 {% if user_ratings.get(movie.id) %}
+                <input type="hidden" name="from_detail" value="">
                 <button type="submit" formaction="{{ url_for('delete_rating') }}" class="btn-delete-icon"
                     onclick="return confirm('Delete rating?');" title="Delete rating">×</button>
                 {% endif %}

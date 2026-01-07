@@ -7,8 +7,8 @@ from app.repositories.base import IUserRepository
 
 class BaseController:
     """
-    Klasa bazowa dla wszystkich kontrolerów.
-    Odpowiedzialność: wspólna logika (auth, user_id, redirects).
+    Base class for all controllers.
+    Responsibility: shared logic (auth, user_id, redirects).
     """
 
     def __init__(self, user_repo: IUserRepository):

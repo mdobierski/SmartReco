@@ -45,6 +45,7 @@
                         onsubmit="return confirm('Delete this rating?');">
                         <input type="hidden" name="movie_id" value="{{ review.movie.id }}">
                         <input type="hidden" name="return_to" value="{{ url_for('my_reviews', search=search) }}">
+                        <input type="hidden" name="from_detail" value="">
                         <button type="submit" class="btn-delete-small">Delete</button>
                     </form>
                 </td>

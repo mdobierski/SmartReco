@@ -78,6 +78,7 @@ class MovieController(BaseController):
         movie_id = request.form.get("movie_id")
         rating_value = request.form.get("rating")
         return_to = request.form.get("return_to")
+        from_detail = request.form.get("from_detail")
 
         if not movie_id or not rating_value:
             return (
@@ -90,5 +91,11 @@ class MovieController(BaseController):
         except ValueError as e:
             return render_template("error.html", error=str(e)), 400
 
-        # Return to provided URL or default to movies catalog
+        # If rating from movie_detail page, stay there with return_to preserved
+        if from_detail:
+            return redirect(
+                url_for("movie_detail", movie_id=movie_id, return_to=return_to)
+            )
+
+        # Otherwise redirect to source (e.g., movies with page/search params)
         return redirect(return_to if return_to else url_for("movies"))

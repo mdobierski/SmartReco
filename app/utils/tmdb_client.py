@@ -6,8 +6,8 @@ import requests
 
 class TMDbClient:
     """
-    Klient do komunikacji z TMDb API.
-    Obsługuje pobieranie filmów i ich szczegółów.
+    Client for TMDb API communication.
+    Handles fetching movies and their details.
     """
 
     BASE_URL = "https://api.themoviedb.org/3"
@@ -19,16 +19,16 @@ class TMDbClient:
     def _make_request(self, endpoint: str, params: Optional[Dict] = None) -> Dict:
 
         if params is None:
-            params = {}  # wszystkie wywołania używają tego osobnego słownika
+            params = {}  # all calls use this separate dictionary
         params["api_key"] = self.api_key
         params["language"] = "en-US"
 
         url = f"{self.BASE_URL}{endpoint}"
-        # ograniczenie API do 4 żądań na sekundę
+        # API rate limit: 4 requests per second
         time.sleep(0.25)
 
         response = self.session.get(url, params=params)
-        response.raise_for_status()  # Rzuca wyjątek jeśli błąd HTTP
+        response.raise_for_status()  # Raises exception on HTTP error
 
         return response.json()
 

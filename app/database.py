@@ -5,9 +5,8 @@ db = SQLAlchemy()
 
 def init_db(app):
     """
-    Inicjalizacja bazy danych dla aplikacji Flask.
-    Tworzy wszystkie tabele na podstawie modeli entities.
-
+    Initialize database for Flask application.
+    Creates all tables based on entity models.
     """
     with app.app_context():
         db.create_all()

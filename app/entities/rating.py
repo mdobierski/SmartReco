@@ -5,8 +5,8 @@ from app.database import db
 
 class Rating(db.Model):
     """
-    Model oceny filmu przez użytkownika.
-    Reprezentuje tabelę 'ratings' w bazie danych.
+    Movie rating model by user.
+    Represents the 'ratings' table in the database.
     """
 
     __tablename__ = "ratings"

@@ -31,7 +31,7 @@ class RatingController(BaseController):
         return render_template("reviews.html", reviews=reviews, search=search)
 
     def delete_review(self):
-        """Delete user's rating and redirect back."""
+        """Delete user's rating and stay on current page or redirect back to source."""
         auth_redirect = self.require_auth()
         if auth_redirect:
             return auth_redirect
@@ -40,8 +40,16 @@ class RatingController(BaseController):
 
         movie_id = request.form.get("movie_id", type=int)
         return_to = request.form.get("return_to", url_for("my_reviews"))
+        from_detail = request.form.get("from_detail")
 
         if movie_id:
             self.rating_service.delete_rating(user_id, movie_id)
 
+        # If deleting from movie_detail page, stay there with return_to preserved
+        if from_detail:
+            return redirect(
+                url_for("movie_detail", movie_id=movie_id, return_to=return_to)
+            )
+
+        # Otherwise redirect directly to source (e.g., movies with page/search, my_reviews)
         return redirect(return_to)

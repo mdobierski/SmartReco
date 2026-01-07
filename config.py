@@ -9,7 +9,7 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 
 
 class Config:
-    """Konfiguracja aplikacji"""
+    """Application configuration"""
 
     SECRET_KEY = os.environ.get("SECRET_KEY")
 

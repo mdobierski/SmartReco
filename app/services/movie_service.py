@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from app.entities.movie import Movie
 from app.repositories.base import IMovieRepository
@@ -11,7 +11,7 @@ class MovieService:
     def get_movie(self, movie_id: int) -> Optional[Movie]:
         return self.movie_repo.get_by_id(movie_id)
 
-    def get_filter_values(self):
+    def get_filter_values(self) -> Dict[str, List[str]]:
         countries = self.movie_repo.get_distinct_countries()
         genres = self.movie_repo.get_distinct_genres()
         return {"countries": countries, "genres": genres}
