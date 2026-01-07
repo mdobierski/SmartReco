@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from app.entities.preferences import Preferences
 from app.repositories.base import IPreferencesRepository
@@ -6,9 +6,9 @@ from app.repositories.base import IPreferencesRepository
 
 class PreferenceService:
     """
-    Serwis odpowiedzialny za preferencje użytkownika.
-    - zapis/nadpis (upsert)
-    - pobieranie preferencji
+    Service responsible for user preferences.
+    - save/overwrite (upsert)
+    - retrieve preferences
     """
 
     def __init__(self, prefs_repo: IPreferencesRepository):
@@ -17,13 +17,13 @@ class PreferenceService:
     def save_preferences(
         self,
         user_id: int,
-        countries: Optional[list[str]],
-        genres: Optional[list[str]],
+        countries: Optional[List[str]],
+        genres: Optional[List[str]],
         year_from: Optional[int],
         year_to: Optional[int],
     ) -> None:
         """
-        Zapisuje lub nadpisuje preferencje (1:1 z userem).
+        Save or overwrite preferences (1:1 with user).
         """
         prefs = Preferences(
             user_id=user_id,
@@ -36,6 +36,6 @@ class PreferenceService:
 
     def get_preferences(self, user_id: int) -> Optional[Preferences]:
         """
-        Pobiera preferencje użytkownika (lub None, jeśli brak).
+        Retrieve user preferences (or None if not set).
         """
         return self.prefs_repo.get_by_user_id(user_id)

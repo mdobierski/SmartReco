@@ -4,8 +4,7 @@ from argon2.exceptions import VerifyMismatchError
 
 class PasswordHasherService:
     """
-    Serwis do hashowania i weryfikacji haseł używając Argon2.
-
+    Service for hashing and verifying passwords using Argon2.
     """
 
     def __init__(self):

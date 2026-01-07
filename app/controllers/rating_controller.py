@@ -12,13 +12,11 @@ class RatingController(BaseController):
 
     def my_reviews(self):
         """Display all user's ratings with movie details, with search."""
-        auth_check = self.require_auth()
-        if auth_check:
-            return auth_check
+        auth_redirect = self.require_auth()
+        if auth_redirect:
+            return auth_redirect
 
         user_id = self.get_current_user_id()
-        if user_id is None:
-            return redirect(url_for("login"))
 
         search = request.args.get("search", "", type=str)
         ratings_with_movies = self.rating_service.get_ratings_with_movies(
@@ -34,13 +32,11 @@ class RatingController(BaseController):
 
     def delete_review(self):
         """Delete user's rating and redirect back."""
-        auth_check = self.require_auth()
-        if auth_check:
-            return auth_check
+        auth_redirect = self.require_auth()
+        if auth_redirect:
+            return auth_redirect
 
         user_id = self.get_current_user_id()
-        if user_id is None:
-            return redirect(url_for("login"))
 
         movie_id = request.form.get("movie_id", type=int)
         return_to = request.form.get("return_to", url_for("my_reviews"))

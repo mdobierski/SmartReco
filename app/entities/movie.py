@@ -5,9 +5,9 @@ from app.database import db
 
 class Movie(db.Model):
     """
-    Model filmu w systemie.
-    Reprezentuje tabelę 'movies' w bazie danych.
-    Zawiera dane z TMDb API.
+    Movie model in the system.
+    Represents the 'movies' table in the database.
+    Contains data from TMDb API.
     """
 
     __tablename__ = "movies"

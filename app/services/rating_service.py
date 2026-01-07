@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, List, Optional, Tuple
 
 from app.entities.rating import Rating
 from app.repositories.base import IRatingRepository
@@ -29,5 +29,7 @@ class RatingService:
     def delete_rating(self, user_id: int, movie_id: int) -> bool:
         return self.rating_repo.delete_rating(user_id, movie_id)
 
-    def get_ratings_with_movies(self, user_id: int, search: str = "") -> list:
+    def get_ratings_with_movies(
+        self, user_id: int, search: str = ""
+    ) -> List[Tuple[Rating, "Movie"]]:
         return self.rating_repo.get_user_ratings_with_movies(user_id, search)

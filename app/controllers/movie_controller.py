@@ -8,7 +8,7 @@ from app.services.rating_service import RatingService
 
 class MovieController(BaseController):
     """
-    Kontroler: lista filmów (paginacja, wyszukiwanie), szczegóły, ocenianie.
+    Controller: movie list (pagination, search), details, rating.
     """
 
     def __init__(
@@ -27,8 +27,6 @@ class MovieController(BaseController):
             return auth_redirect
 
         user_id = self.get_current_user_id()
-        if not user_id:
-            return redirect(url_for("login"))
 
         page = int(request.args.get("page", 1))
         search = request.args.get("search") or None
@@ -52,8 +50,6 @@ class MovieController(BaseController):
             return auth_redirect
 
         user_id = self.get_current_user_id()
-        if user_id is None:
-            return redirect(url_for("login"))
 
         movie = self.movie_service.get_movie(movie_id)
         if not movie:
@@ -78,29 +74,21 @@ class MovieController(BaseController):
             return auth_redirect
 
         user_id = self.get_current_user_id()
-        if not user_id:
-            return redirect(url_for("login"))
 
         movie_id = request.form.get("movie_id")
         rating_value = request.form.get("rating")
         return_to = request.form.get("return_to")
 
         if not movie_id or not rating_value:
-            return "Brak wymaganych parametrów", 400
+            return (
+                render_template("error.html", error="Missing required parameters"),
+                400,
+            )
 
         try:
             self.rating_service.rate_movie(user_id, int(movie_id), int(rating_value))
         except ValueError as e:
-            return f"Błąd: {e}", 400
+            return render_template("error.html", error=str(e)), 400
 
-        # Jeśli return_to jest podane, wróć tam; w przeciwnym razie do katalogu
-        if return_to:
-            return redirect(return_to)
-
-        return redirect(
-            url_for(
-                "movies",
-                page=request.args.get("page", 1),
-                search=request.args.get("search", ""),
-            )
-        )
+        # Return to provided URL or default to movies catalog
+        return redirect(return_to if return_to else url_for("movies"))

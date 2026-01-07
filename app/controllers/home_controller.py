@@ -7,8 +7,8 @@ from app.services.preference_service import PreferenceService
 
 class HomeController(BaseController):
     """
-    Kontroler odpowiedzialny za stronę główną aplikacji.
-    Odpowiedzialność: wyświetlanie strony głównej po zalogowaniu.
+    Controller responsible for the home page.
+    Responsibility: display home page after login.
     """
 
     def __init__(
@@ -25,8 +25,6 @@ class HomeController(BaseController):
             return auth_redirect
 
         user_id = self.get_current_user_id()
-        if not user_id:
-            return redirect(url_for("login"))
 
         prefs = self.preference_service.get_preferences(user_id)
         if not prefs:

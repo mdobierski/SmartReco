@@ -8,9 +8,6 @@ class MovieService:
     def __init__(self, movie_repo: IMovieRepository):
         self.movie_repo = movie_repo
 
-    def get_all_movies(self) -> List[Movie]:
-        return self.movie_repo.get_all()
-
     def get_movie(self, movie_id: int) -> Optional[Movie]:
         return self.movie_repo.get_by_id(movie_id)
 

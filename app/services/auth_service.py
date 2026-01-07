@@ -1,5 +1,7 @@
 from typing import Optional
 
+from flask import session
+
 from app.entities.user import User
 from app.repositories.base import IUserRepository
 from app.utils.password_hasher import PasswordHasherService
@@ -34,3 +36,11 @@ class AuthService:
             return None
 
         return user
+
+    def create_session(self, user: User) -> None:
+        """Create user session after successful login/registration."""
+        session["user_email"] = user.email
+
+    def destroy_session(self) -> None:
+        """Destroy user session on logout."""
+        session.pop("user_email", None)

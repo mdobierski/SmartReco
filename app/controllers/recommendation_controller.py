@@ -9,7 +9,7 @@ from app.services.recommendation_service import RecommendationService
 
 class RecommendationController(BaseController):
     """
-    Kontroler rekomendacji: kryteria i personalne.
+    Controller for recommendations: criteria-based and personal.
     """
 
     def __init__(
@@ -95,8 +95,6 @@ class RecommendationController(BaseController):
             return auth_redirect
 
         user_id = self.get_current_user_id()
-        if not user_id:
-            return redirect(url_for("login"))
 
         prefs = self.preference_service.get_preferences(user_id)
         if not prefs:
@@ -115,3 +113,11 @@ class RecommendationController(BaseController):
             page=page,
             total_pages=total_pages,
         )
+
+    def ai_coming_soon(self):
+        """Display AI recommendations coming soon page."""
+        auth_redirect = self.require_auth()
+        if auth_redirect:
+            return auth_redirect
+
+        return render_template("ai_coming_soon.html")

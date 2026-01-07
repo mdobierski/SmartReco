@@ -10,6 +10,7 @@ from app.repositories.base import (
     IPreferencesRepository,
     IRatingRepository,
 )
+from app.utils.pagination_helper import paginate, pick_page_size
 
 
 class RecommendationService:
@@ -60,24 +61,6 @@ class RecommendationService:
         return total * 100.0
 
     @staticmethod
-    def _paginate(items: List, page: int, per_page: int) -> Tuple[List, int]:
-        total_pages = max(1, math.ceil(len(items) / per_page))
-        page = max(1, min(page, total_pages))
-        start = (page - 1) * per_page
-        end = start + per_page
-        return items[start:end], total_pages
-
-    @staticmethod
-    def _pick_page_size(total: int) -> int:
-        if total > 20:
-            return 20
-        if total > 15:
-            return 15
-        if total > 10:
-            return 10
-        return total or 1
-
-    @staticmethod
     def _cutoff_for_user_likes(user_ratings: List[Rating]) -> Optional[int]:
         if not user_ratings:
             return None
@@ -108,8 +91,8 @@ class RecommendationService:
             if pm >= 20.0:
                 scored.append((m, pm))
         scored.sort(key=lambda x: x[1], reverse=True)
-        per_page = self._pick_page_size(len(scored))
-        page_items, total_pages = self._paginate([s[0] for s in scored], page, per_page)
+        per_page = pick_page_size(len(scored))
+        page_items, total_pages = paginate([s[0] for s in scored], page, per_page)
         percents = [s[1] for s in scored][
             (page - 1) * per_page : (page - 1) * per_page + len(page_items)
         ]
@@ -190,8 +173,8 @@ class RecommendationService:
             scored.append((m, score, pm))
         scored.sort(key=lambda x: x[1], reverse=True)
 
-        per_page = self._pick_page_size(len(scored))
-        page_items, total_pages = self._paginate([s[0] for s in scored], page, per_page)
+        per_page = pick_page_size(len(scored))
+        page_items, total_pages = paginate([s[0] for s in scored], page, per_page)
         percents = [s[2] for s in scored][
             (page - 1) * per_page : (page - 1) * per_page + len(page_items)
         ]

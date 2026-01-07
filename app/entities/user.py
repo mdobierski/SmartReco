@@ -5,8 +5,8 @@ from app.database import db
 
 class User(db.Model):
     """
-    Model użytkownika w systemie.
-    Reprezentuje tabelę 'users' w bazie danych.
+    User model in the system.
+    Represents the 'users' table in the database.
     """
 
     __tablename__ = "users"

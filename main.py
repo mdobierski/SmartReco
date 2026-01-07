@@ -1,6 +1,5 @@
 from flask import Flask, render_template
 
-from app.controllers.ai_recommendation_controller import AiRecommendationController
 from app.controllers.auth_controller import AuthController
 from app.controllers.home_controller import HomeController
 from app.controllers.movie_controller import MovieController
@@ -52,7 +51,6 @@ def create_app():
         user_repo, movie_service, preference_service, recommendation_service
     )
     rating_controller = RatingController(rating_service, user_repo)
-    ai_recommendation_controller = AiRecommendationController(user_repo)
 
     # Routes: Home
     app.add_url_rule("/", "index", home_controller.index, methods=["GET"])
@@ -132,7 +130,7 @@ def create_app():
     app.add_url_rule(
         "/recommendation-ai",
         "ai_rec",
-        ai_recommendation_controller.coming_soon,
+        recommendation_controller.ai_coming_soon,
         methods=["GET"],
     )
 

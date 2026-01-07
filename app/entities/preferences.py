@@ -1,13 +1,13 @@
 from datetime import datetime, timezone
-from typing import Optional
+from typing import List, Optional
 
 from app.database import db
 
 
 class Preferences(db.Model):
     """
-    Model preferencji użytkownika.
-    Reprezentuje tabelę 'preferences' w bazie danych.
+    User preferences model.
+    Represents the 'preferences' table in the database.
     """
 
     __tablename__ = "preferences"
@@ -28,8 +28,8 @@ class Preferences(db.Model):
     def __init__(
         self,
         user_id: int,
-        countries: Optional[list[str]] = None,
-        genres: Optional[list[str]] = None,
+        countries: Optional[List[str]] = None,
+        genres: Optional[List[str]] = None,
         year_from: Optional[int] = None,
         year_to: Optional[int] = None,
     ) -> None:

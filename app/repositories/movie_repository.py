@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from app.database import db
 from app.entities.movie import Movie
@@ -21,7 +21,7 @@ class SqlMovieRepository(IMovieRepository):
 
     def search(
         self, query: Optional[str], page: int, per_page: int
-    ) -> tuple[list[Movie], int]:
+    ) -> Tuple[List[Movie], int]:
         q = Movie.query  # type: ignore
         if query:
             like = f"%{query}%"

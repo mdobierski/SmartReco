@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from app.database import db
 from app.entities.rating import Rating
@@ -33,7 +33,9 @@ class SqlRatingRepository(IRatingRepository):
             return True
         return False
 
-    def get_user_ratings_with_movies(self, user_id: int, search: str = "") -> list:
+    def get_user_ratings_with_movies(
+        self, user_id: int, search: str = ""
+    ) -> List[Tuple["Rating", "Movie"]]:
         from app.entities.movie import Movie
 
         query = (

@@ -8,8 +8,8 @@ from app.services.preference_service import PreferenceService
 
 class PreferenceController(BaseController):
     """
-    Kontroler odpowiedzialny za zarządzanie preferencjami użytkownika.
-    Odpowiedzialność: wyświetlanie formularza, zapisywanie preferencji.
+    Controller responsible for user preferences management.
+    Responsibility: display form, save preferences.
     """
 
     def __init__(
@@ -28,8 +28,6 @@ class PreferenceController(BaseController):
             return auth_redirect
 
         user_id = self.get_current_user_id()
-        if not user_id:
-            return redirect(url_for("login"))
 
         filter_values = self.movie_service.get_filter_values()
         return render_template("preferences.html", **filter_values)
@@ -40,8 +38,6 @@ class PreferenceController(BaseController):
             return auth_redirect
 
         user_id = self.get_current_user_id()
-        if not user_id:
-            return redirect(url_for("login"))
 
         countries = request.form.getlist("countries")
         genres = request.form.getlist("genres")

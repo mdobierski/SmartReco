@@ -1,6 +1,6 @@
 from typing import Optional
 
-from flask import redirect, render_template, request, session, url_for
+from flask import redirect, render_template, request, url_for
 
 from app.controllers.base_controller import BaseController
 from app.repositories.base import IUserRepository
@@ -9,8 +9,8 @@ from app.services.auth_service import AuthService
 
 class AuthController(BaseController):
     """
-    Kontroler odpowiedzialny za autentykację użytkowników.
-    Odpowiedzialność: login, register, logout (warstwa HTTP).
+    Controller responsible for user authentication.
+    Responsibility: login, register, logout (HTTP layer).
     """
 
     def __init__(self, user_repo: IUserRepository, auth_service: AuthService):
@@ -26,7 +26,7 @@ class AuthController(BaseController):
 
         user = self.auth_service.login(email, password)
         if user:
-            session["user_email"] = user.email
+            self.auth_service.create_session(user)
             return redirect(url_for("index"))
         else:
             return render_template("login.html", error="Wrong email or password")
@@ -42,9 +42,9 @@ class AuthController(BaseController):
         if not user:
             return render_template("register.html", error="User already exists")
 
-        session["user_email"] = user.email
+        self.auth_service.create_session(user)
         return redirect(url_for("preferences"))
 
     def logout(self):
-        session.pop("user_email", None)
+        self.auth_service.destroy_session()
         return redirect(url_for("login"))

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from app.entities.movie import Movie
 from app.entities.preferences import Preferences
@@ -31,7 +31,7 @@ class IMovieRepository(ABC):
     @abstractmethod
     def search(
         self, query: Optional[str], page: int, per_page: int
-    ) -> tuple[list[Movie], int]: ...
+    ) -> Tuple[List[Movie], int]: ...
 
     @abstractmethod
     def get_distinct_countries(self) -> List[str]: ...
@@ -66,7 +66,9 @@ class IRatingRepository(ABC):
     def delete_rating(self, user_id: int, movie_id: int) -> bool: ...
 
     @abstractmethod
-    def get_user_ratings_with_movies(self, user_id: int, search: str = "") -> list: ...
+    def get_user_ratings_with_movies(
+        self, user_id: int, search: str = ""
+    ) -> List[Tuple[Rating, "Movie"]]: ...
 
 
 class IPreferencesRepository(ABC):
