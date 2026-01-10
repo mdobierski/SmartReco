@@ -1,8 +1,11 @@
-from typing import List, Optional, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from app.database import db
 from app.entities.rating import Rating
 from app.repositories.base import IRatingRepository
+
+if TYPE_CHECKING:
+    from app.entities.movie import Movie
 
 
 class SqlRatingRepository(IRatingRepository):
@@ -48,4 +51,5 @@ class SqlRatingRepository(IRatingRepository):
             query = query.filter(Movie.title.ilike(f"%{search}%"))  # type: ignore
 
         results = query.order_by(Rating.created_at.desc()).all()  # type: ignore
-        return results
+        # Convert SQLAlchemy Row objects to tuples
+        return [(row[0], row[1]) for row in results]

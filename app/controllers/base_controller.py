@@ -14,12 +14,17 @@ class BaseController:
     def __init__(self, user_repo: IUserRepository):
         self.user_repo = user_repo
 
-    def get_current_user_id(self) -> Optional[int]:
+    def get_current_user_id(self) -> int:
+        """
+        Get current user ID. Should only be called after require_auth().
+        """
         email = session.get("user_email")
         if not email:
-            return None
+            raise RuntimeError("User not authenticated - call require_auth() first")
         user = self.user_repo.find_by_email(email)
-        return user.id if user else None
+        if not user:
+            raise RuntimeError(f"User with email {email} not found in database")
+        return user.id
 
     def is_authenticated(self) -> bool:
         return "user_email" in session

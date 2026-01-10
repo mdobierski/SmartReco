@@ -1,7 +1,10 @@
-from typing import Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from app.entities.rating import Rating
 from app.repositories.base import IRatingRepository
+
+if TYPE_CHECKING:
+    from app.entities.movie import Movie
 
 
 class RatingService:
